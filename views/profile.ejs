@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+    <title>Resistance!</title>
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
+    <style>
+        body { 
+            padding-top:80px;
+            background-color: #263238; 
+        }
+    </style>
+</head>
+<div class="container">
+    <div class="jumbotron col-md-8 col-md-offset-2 col-xs-12">
+        <div class="page-header text-center">
+            <h1>
+                <span class="fa fa-star"></span> 
+                Hello <%= user.username %> 
+                <span class="fa fa-star"></span>
+            </h1>
+        </div>
+
+        <div class="row text-center">
+            <a href="/createGame" class="btn btn-lg btn-primary">Create Game</a>
+            <a href="/ongoingGames" class="btn btn-lg btn-primary">Join Game</a>
+            <a href="/logout" class="btn btn-danger btn-lg">logout</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

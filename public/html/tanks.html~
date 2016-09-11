@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Tsars Tanks</title>
+<body>
+    <!-- Files needed to run Hexi -->
+    <!--
+	 <script src="../src/modules/pixi.js/bin/pixi.js"></script>
+	 <script src="../bin/modules.js"></script>
+	 <script src="../bin/core.js"></script>
+       -->
+
+    <script src="../JS/hexi.js"></script>
+    <script src="../JS/pixi.js"></script>
+    <script src="../JS/modules.js"></script>
+    <script src="../JS/core.js"></script>
+
+    <!-- Main application file -->
+    <script src="../JS/new_tanks.js"></script>
+</body>
+

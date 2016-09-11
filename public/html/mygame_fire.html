@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+    <head>
+	<meta charset="utf-8">
+	<title>Pixi.js basic example</title>
+	<style> 
+         html {
+	     background:url(images/backgr_tanks.jpg) no-repeat center center fixed;
+	     -webkit-background-size:cover;
+	     -moz-background-size:cover;
+	     -o-background-size:cover;
+	     background-size:cover;
+	 }	 
+	</style>
+    </head>
+    <body>
+	<script src="JS/pixi.js"></script>
+	<script src="JS/scaleToWindow.js"></script>
+	<script>
+
+	    //dont knwo why
+	    "use strict";
+	    
+	    //make the margins 
+	    var newStyle = document.createElement("style");
+	    var hi = 100;
+	    var style = "* {padding: 0; margin: 0}";
+	    newStyle.appendChild(document.createTextNode(style));
+	    document.head.appendChild(newStyle);
+
+	    // define aliases
+	    var Container = PIXI.Container,
+		autoDetectRenderer = PIXI.autoDetectRenderer,
+		loader = PIXI.loader,
+		resources = PIXI.loader.resources,
+		Sprite = PIXI.Sprite;
+
+
+	    var things_to_load = ["images/user_tank_ed1.png", "images/grass3.png", "images/propeller.png"];
+
+	    var g = hexi(520,520,setup, things_to_load, load);
+
+	    g.scaleToWindow();
+	    g.start();
+
+
+	    function load() {
+		g.loadinBar();
+	    }
+
+	    
+	    //get current window width and hight
+	    var window_width = window.innerWidth || document.documentElement.clientWidth
+			    || document.body.clientWidth;
+	    var window_height = window.innerHeight || document.documentElement.clientHeight
+			    || document.body.clientHeight;
+
+	    // create the renderer
+	    var renderer = autoDetectRenderer(window_width*0.75, window_height*0.75);
+
+	    //renderer.view.style.position = "absolete";
+	    //renderer.view.style.left = 0.125 * window_width*100000;
+	    //renderer.view.style.top = 0.125 * window_height;
+
+	    // add thecanvas to thehtml doc
+	    document.body.appendChild(renderer.view);
+
+	    // create a container object holding all things taht Pixi will desplay
+	    var stage = new PIXI.Container();
+
+	    //var scale = scaleToWindow(renederer.view);
+
+	    //renderer.autoResize = true;
+	    window.addEventListener("resize", function(event){	
+		window_width = window.innerWidth || document.documentElement.clientWidth
+			    || document.body.clientWidth;
+		window_height = window.innerHeight || document.documentElement.clientHeight
+			    || document.body.clientHeight;
+		
+		renderer.resize(window_width * 0.75, window_height * 0.75);
+	    });
+	    
+	    //load user tank image into cache
+	    loader
+				.add("images/user_tank_ed1.png")
+				.add("images/grass3.png")
+				.add("images/propeller.png")
+				.load(setup);
+
+
+	    var tankA;
+	    var tankB;
+	    var grass;
+	    var propeller;
+
+	    var state;
+	    var score_display;
+	    var bullets;
+	    
+	    function setup() {
+
+		grass = g.sprite("images/grass3.png");
+		tankA = g.sprite("images/user_tank_ed1.png");
+		tankB = g.sprite("images/user_tank_ed1.png");
+		propeller = g.sprite("images/propeller.png");
+		
+		//after loader finished loading the image
+		//tankA = new Sprite(resources["images/user_tank_ed1.png"].texture);
+		//tankB = new Sprite(resources["images/user_tank_ed1.png"].texture);
+		//grass = new Sprite(resources["images/grass3.png"].texture);
+		//propeller = new Sprite(resources["images/propeller.png"].texture);
+
+
+		score_display = g.text("0", "20px emulogic", "#00FF00", 400, 10);
+		bullets = [];
+		
+		
+		//set up grass background
+		grass.width = window_width * 0.75;
+		grass.height = window_height * 0.75;
+
+		stage.addChild(grass);
+
+		// set up up spinning propeller
+		propeller.width = 90;
+		propeller.height = 70;
+
+		propeller.anchor.x = 0.5;
+		propeller.anchor.y = 0.5;
+
+		propeller.x = propeller.width/2 + 10;
+		propeller.y = window_height * 0.75 / 2;
+
+		stage.addChild(propeller);
+
+		//set up tanks
+		tankA.width = 70;
+		tankA.height = 120;
+
+		tankB.width = 70;
+		tankB.height = 120;
+		
+		//set center of image to be the rotocenter
+		tankA.anchor.x = 0.5;
+		tankA.anchor.y = 0.5;
+
+		tankB.anchor.x = 0.5;
+		tankB.anchor.y = 0.5;
+
+		//or tankA.position.set(x,y);
+		tankA.x = window_width * 0.75 / 2;
+		tankA.y = window_height * 0.75 - tankA.height/2;
+
+		tankB.x = window_width * 0.75 / 2;
+		tankB.y = tankB.height/2;
+
+		// set hozintal and vertical velocities
+		tankA.vx = 0;
+		tankA.vy = 0;
+		
+		//rotate tankB clockwise by 180 degrees
+		tankB.rotation = Math.PI;
+		
+		// add sprite tank to stage
+		stage.addChild(tankA);
+		stage.addChild(tankB);
+		
+		// set the keyboardbuttons and actions
+		var left = keyboard(37),
+		    up = keyboard(38),
+		    right = keyboard(39),
+		    down = keyboard(40),
+		    space = keyboard(32); // fire button
+
+		// Left key
+		left.press = function() {
+		    tankA.rotation = 270 / 180 * Math.PI;
+		    tankA.vx = -5;
+		    tankA.vy = 0;
+		};
+
+		left.release = function() {
+		    // if left is released and rigth is not down and tank is not moving vertically,
+		    // then stop the tank
+		    if (!right.isDown && tankA.vy === 0) {
+			tankA.vx = 0;
+		    }
+		};
+
+		// Right key
+		right.press = function() { 
+		    tankA.rotation = 0.5 * Math.PI;
+		    tankA.vx = 5;
+		    tankA.vy = 0;
+		};
+
+		right.release = function() {
+		    // if right is released and left is not down and tank is not moving vertically,
+		    // then stop the tank
+		    if (!left.isDown && tankA.vy === 0) {
+			tankA.vx = 0;
+		    }
+		};
+
+		// Up key
+		up.press = function() {
+		    tankA.rotation = 0;
+
+		    tankA.vx = 0;
+		    tankA.vy = -5;
+		};
+
+		up.release = function() {
+		    // up is released and down is not down and tank is not moving horizontally,
+		    // then stop the tank
+		    if (!down.isDown && tankA.vx === 0) {
+			tankA.vy = 0;
+		    }
+		};
+
+		// Down key
+		down.press = function() {
+		    tankA.rotation = Math.PI;
+
+		    tankA.vx = 0;
+		    tankA.vy = 5;
+		};
+
+		down.release = function() {
+		    // down is released and up is not down and tank is not moving horizontally,
+		    // then stop the tank
+		    if (!up.isDown && tankA.vx === 0) {
+			tankA.vy = 0;
+		    }
+		};
+
+		// Space key - Fire
+		space.press = function() {
+		    //fire inthe direction of rotation
+		};
+
+		space.release = function() {
+		    
+		};
+		
+		
+		g.state = play;
+		score = 0;
+		//alien_timer = 0;
+		//alien_frequency = 100;
+		winner = "";
+
+		//set the state to play mode
+		g.state = play;		
+		
+		game_loop();
+	    }
+
+	    function game_loop() {
+
+		requestAnimationFrame(game_loop);
+
+		//spinning death propeller regardless of state of the game
+		propeller.rotation += 3/180*Math.PI;
+
+		state();
+		
+		renderer.render(stage);
+	    }
+
+	    function play() {
+
+		var right_ed = false;
+		var left_ed = false;
+		var up_ed = false;
+		var bot_ed = false;
+
+		g.conatain(tankA, g.state);
+		g.move(tankA);
+		g.move(bullets);
+		g.contain(tankA, g.state);
+		
+		//hit right edge 
+		if (tankA.x + tankA.height/2 + 5 >= window_width * 0.75) {
+		    right_ed = true;
+		    if (!(tankA.vx > 0)) {	
+			tankA.x += tankA.vx;			
+		    }
+		}
+		//hit left edge
+		else if (tankA.x - tankA.height/2 - 5 <= 0) {
+		    left_ed = true;
+		    if (!(tankA.vx < 0)) {
+			tankA.x += tankA.vx;
+		    }
+		}
+		//hit bottom edge -5 up 5 down
+		if (tankA.y + tankA.height/2 + 5 >= window_height * 0.75) {
+		    bot_ed = true;
+		    if (!(tankA.vy > 0)) {
+			tankA.y += tankA.vy;
+		    }
+		}
+		//hit upper edge
+		else if (tankA.y - tankA.height/2 - 5 <= 0 ) {
+		    up_ed = true;
+		    if (!(tankA.vy < 0)) {
+			tankA.y += tankA.vy;
+		    }
+		}
+
+		
+		if ((up_ed || bot_ed) && (! (left_ed || right_ed))) {
+		    tankA.x += tankA.vx; 
+		} else if ((right_ed || left_ed) && (! (up_ed || bot_ed))) {
+		    tankA.y += tankA.vy;
+		} else if (!(right_ed || left_ed || up_ed || bot_ed)){
+		    tankA.x += tankA.vx;
+		    tankA.y += tankA.vy;
+		}
+	    }
+
+
+	    
+
+	    
+	    // listens to keyboard and captures events
+	    function keyboard(keyCode) {
+		var key = {};
+		key.code = keyCode;
+		key.isDown = false;
+		key.isUp = true;
+		key.press = undefined;
+		key.release = undefined;
+
+		//The `downHandler`
+		key.downHandler = function(event) {
+		    if (event.keyCode === key.code) {
+			if (key.isUp && key.press) key.press();
+			key.isDown = true;
+			key.isUp = false;
+		    }
+		    event.preventDefault();
+		};
+
+		//The `upHandler`
+		key.upHandler = function(event) {
+		    if (event.keyCode === key.code) {
+			if (key.isDown && key.release) key.release();
+			key.isDown = false;
+			key.isUp = true;
+		    }
+		    event.preventDefault();
+		};
+
+		//Attach event listeners
+		window.addEventListener("keydown", key.downHandler.bind(key), false);
+		window.addEventListener("keyup", key.upHandler.bind(key), false);
+		return key;
+	    }
+
+
+
+
+	    
+	</script>
+    </body>
+</html>
