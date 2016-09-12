@@ -1,7 +1,7 @@
 {
-  "name": "socket-chat-example",
+  "name": "resistance-game",
   "version": "0.0.1",
-  "description": "my first socket.io app",
+  "description": "Web-based resistance game",
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.15.0",
