@@ -6,8 +6,7 @@ var bcrypt = require('bcrypt-nodejs');
 var userSchema = mongoose.Schema({
 	username : String,
 	password : String,
-	activeGame : Boolean,
-	hasOpponent : Boolean
+	currentGameID : String
 }, {collection : 'resistance_users'});
 
 //method for hashing passwords

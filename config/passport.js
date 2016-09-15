@@ -32,7 +32,6 @@ module.exports = function(passport) {
 					//return error if any found
 					return done(err);
 				}
-
 				if (user) {
 					//user already exists
 					return done(null, false, req.flash('signupMessage', 'That username already exists'));
@@ -43,8 +42,7 @@ module.exports = function(passport) {
 					//add user info
 					newUser.username = username;
 					newUser.password = newUser.generateHash(password);
-					newUser.activeGame = false;
-					newUser.hasOpponent = false;
+					newUser.currentGameID = "";
 
 					//save user
 					newUser.save(function(err) {
@@ -86,16 +84,7 @@ module.exports = function(passport) {
 				return done(null, false, req.flash('loginMessage', 'Incorrect password.'));
 			}
 
-			//user is found. Set activeGame to false and continut
-			user.activeGame = false;
-			user.hasOpponent = false;
-			user.save(function(err) {
-				if (err) {
-					throw err;
-				}
-
-				return done(null, user);
-			});
+			return done(null, user);
 		});
 	}));
 };

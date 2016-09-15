@@ -1,4 +1,5 @@
-var User = require('../app/models/user');
+//var User = require('../app/models/user');
+var Game = require('../app/gameplay.js');
 
 module.exports = function(app, passport) {
 	//default
@@ -19,6 +20,17 @@ module.exports = function(app, passport) {
 		res.render('profile.ejs', { user: req.user });
 	});
 
+	//createGame
+	app.get('/createGame', function(req, res) {
+		//load signup page with any flash data if it exists
+		Game.createGame(req, res, function(req, res, err){
+			if (err) {
+				throw err;
+			}
+
+			res.render('createGame.ejs', { user: req.user});
+		});
+	});
 
 	//login
 	app.get('/login', function(req, res) {
@@ -48,7 +60,6 @@ module.exports = function(app, passport) {
 
 	//logout
 	app.get('/logout', function(req, res) {
-		req.user.activeGame = false;
 		req.user.save(function(err) {
 			req.logout();
 			res.redirect('/');
