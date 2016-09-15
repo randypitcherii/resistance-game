@@ -20,6 +20,12 @@ module.exports = function(app, passport) {
 		res.render('profile.ejs', { user: req.user });
 	});
 
+	//join page
+	app.get('/ongoingGames', function(req, res) {
+		//load join page 
+		res.render('join.ejs');
+	});
+
 	//createGame
 	app.get('/createGame', function(req, res) {
 		//load signup page with any flash data if it exists
