@@ -16,15 +16,19 @@
         <div class="page-header text-center">
             <h1>
                 <span class="fa fa-star"></span> 
-                Hello <%= user.username %> 
+                Join a Game!
                 <span class="fa fa-star"></span>
             </h1>
         </div>
-
-        <div class="row text-center">
-            <h1> Game ID is: <%= user.currentGameID %></h1>
+    <!-- LOGIN FORM -->
+    <form action="/joinGame" method="post">
+        <div class="form-group">
+            <label>Enter Game Leader Name:</label>
+            <input type="text" class="form-control" name="gameLeader">
         </div>
-    </div>
+        <button type="submit" class="btn btn-primary btn-lg">Join</button>
+    </form>
+
 </div>
 </body>
 </html>

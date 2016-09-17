@@ -23,7 +23,7 @@ module.exports = function(app, passport) {
 	//join page
 	app.get('/ongoingGames', function(req, res) {
 		//load join page 
-		res.render('join.ejs');
+		res.render('joinGame.ejs');
 	});
 
 	//createGame
@@ -50,6 +50,12 @@ module.exports = function(app, passport) {
 		failureRedirect : '/login',
 		failureFlash : true
 	}));
+
+	//process game joining
+	app.post('/joinGame', function(req, res) {
+
+		console.log(req.body.gameLeader);
+	});
 
 	//signup
 	app.get('/signup', function(req, res) {
