@@ -1,5 +1,5 @@
 //var User = require('../app/models/user');
-var Game = require('../app/gameplay.js');
+var gameplay = require('../app/gameplay.js');
 
 module.exports = function(app, passport) {
 	//default
@@ -15,26 +15,43 @@ module.exports = function(app, passport) {
 	});
 
 	//profile
-	app.get('/profile', function(req, res) {
+	app.get('/profile', isLoggedIn, function(req, res) {
 		//load signup page with any flash data if it exists
 		res.render('profile.ejs', { user: req.user });
 	});
 
-	//join page
-	app.get('/ongoingGames', function(req, res) {
-		//load join page 
-		res.render('joinGame.ejs');
-	});
-
 	//createGame
-	app.get('/createGame', function(req, res) {
+	app.get('/createGame', isLoggedIn, function(req, res) {
 		//load signup page with any flash data if it exists
-		Game.createGame(req, res, function(req, res, err){
+		gameplay.createGame(req, res, function(req, res, err){
 			if (err) {
 				throw err;
 			}
 
-			res.render('createGame.ejs', { user: req.user});
+			res.render('createGame.ejs', { user: req.user, isCreator: true});
+		});
+	});
+
+	//join page
+	app.get('/joinGame', isLoggedIn, function(req, res) {
+		//load join page 
+		res.render('joinGame.ejs', {message: req.flash('joinMessage')});
+	});
+
+	//process game joining
+	app.post('/joinGame', isLoggedIn, function(req, res) {
+		gameplay.joinGame(req, res, function(req, res, err, wasFound){
+			if (err) {
+				throw err;
+			}
+			//continue to createGame room if game was found
+			if (wasFound) {
+				res.render('createGame.ejs', {user: req.user, isCreator: false});
+
+			//if game was not found, redirect to join game again.
+			} else {
+				res.redirect('/joinGame');
+			}
 		});
 	});
 
@@ -51,12 +68,6 @@ module.exports = function(app, passport) {
 		failureFlash : true
 	}));
 
-	//process game joining
-	app.post('/joinGame', function(req, res) {
-
-		console.log(req.body.gameLeader);
-	});
-
 	//signup
 	app.get('/signup', function(req, res) {
 		//load signup page with any flash data if it exists
@@ -71,7 +82,7 @@ module.exports = function(app, passport) {
 	}));
 
 	//logout
-	app.get('/logout', function(req, res) {
+	app.get('/logout', isLoggedIn, function(req, res) {
 		req.user.save(function(err) {
 			req.logout();
 			res.redirect('/');
