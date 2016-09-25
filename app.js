@@ -44,4 +44,4 @@ require('./app/routes.js')(app, passport);
 //start the server.
 http.listen(port, function() {
 	console.log("Listening on port " + port);
-})
+});
