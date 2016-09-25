@@ -2,6 +2,7 @@
 var express = require('express')
 var app = express();
 var http = require('http').Server(app);
+var io = require('socket.io')(http);
 var mongoose = require('mongoose');
 var passport = require('passport');
 var flash = require('connect-flash');
@@ -40,6 +41,13 @@ app.use(flash()); //use for flash messages
 
 //setup routes
 require('./app/routes.js')(app, passport);
+
+//establish socket listener
+io.on('connection', function(socket) {
+	socket.on('join', function(username) {
+		socket.join(gameID);
+	});
+});
 
 //start the server.
 http.listen(port, function() {
