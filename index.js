@@ -1,60 +1,30 @@
-//require core external libraries
-var express = require('express')
+var express = require('express');
 var app = express();
-var http = require('http').Server(app);
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
-var mongoose = require('mongoose');
-var passport = require('passport');
-var flash = require('connect-flash');
+var port = process.env.PORT || 3000;
 
-//require helper libraries
-var morgan = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var session = require('express-session');
+server.listen(port, function () {
+  console.log('Server listening at port %d', port);
+});
 
-//database config file
-var configDB = require('./config/database.js');
-
-//setup port and host.
-var port = 3000;
-var host = 'localhost';
-
-//setup database
-mongoose.connect(configDB.url);//connect to our DB
-
-//configure passport
-require('./config/passport')(passport);
-
-//setup express
-app.use(morgan('dev')); //log every request to the console
-app.use(cookieParser()); //read cookies
-app.use(bodyParser()); //read html forms
-app.use(express.static('public'));
-app.set('view engine', 'ejs'); //setup ejs for templating
-app.use(express.static('public'));
-
-//setup passport
-app.use(session({ secret: 'RavenclawAllDay'}));//session secret
-app.use(passport.initialize());
-app.use(passport.session()); //persistent login sessions
-app.use(flash()); //use for flash messages
-
-//setup routes
-require('./app/routes.js')(app, passport);
+// Routing
+//app.get('/public', function(req, res){
+//  res.sendfile('index.html');
+//});
 
 app.use(express.static(__dirname + '/views'));
 
+
+/*
+app.use(express.static(__dirname + '/public'));
+*/
+// Chatroom
+
 var numUsers = 0;
 
-//establish socket listener
-io.on('connection', function(socket) {
-	socket.on('join', function(username) {
-		socket.join(gameID);
-	});
-
-   var addedUser = false;
+io.on('connection', function (socket) {
+  var addedUser = false;
   console.log('user has been connected');
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
@@ -110,12 +80,4 @@ io.on('connection', function(socket) {
       });
     }
   });
-});
-
-
-
-
-//start the server.
-http.listen(port, function() {
-	console.log("Listening on port " + port);
 });
