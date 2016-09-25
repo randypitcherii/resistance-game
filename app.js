@@ -32,6 +32,7 @@ app.use(cookieParser()); //read cookies
 app.use(bodyParser()); //read html forms
 app.use(express.static('public'));
 app.set('view engine', 'ejs'); //setup ejs for templating
+app.use(express.static('public'));
 
 //setup passport
 app.use(session({ secret: 'RavenclawAllDay'}));//session secret
