@@ -1,6 +1,5 @@
 //var User = require('../app/models/user');
 var gameplay = require('../app/gameplay.js');
-//var createg = require('../app/creategame.js')
 
 module.exports = function(app, passport) {
 	//default
