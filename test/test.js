@@ -1,21 +1,26 @@
-var assert = require('assert');
-var should = require('should');
+//include testing libraries
+var should = require('should');//assertion library https://github.com/shouldjs/should.js
+var request = require('request');//used to make HTTP request to test server
+
+//include resistance-game libraries
+var User = require('../app/models/user');//user object schema
+var Game = require('./models/game.js');//game object schema
+var gameplay = require('../app/gameplay.js');//game interaction
+
+//define global testing variables
+var appURL = 'localhost:3000';//base url for the running server
+var server = require('../app');//used to instantiate new servers.
 
 //========================================================================
 //this is a sample of code for testing an Array
 //========================================================================
 describe('Array', function() {
-  describe('#indexOf()', function() {
-  	//using assert library
-    it('should return -1 when the value is not present (asserts).', function() {
-      assert.equal(-1, [1,2,3].indexOf(4));
-    });
-
-    //using should library
-    it('should return -1 when the value is not present (shouldjs)', function() {
-      [1,2,3].indexOf(4).should.equal(-1);
-    });
-  });
+	describe('#indexOf()', function() {
+	//using should library
+		it('should return -1 when the value is not present (shouldjs)', function() {
+			[1,2,3].indexOf(4).should.equal(-1);
+		});
+	});
 });//========================================================================
 
 
@@ -24,21 +29,33 @@ describe('Array', function() {
 //Login functionality
 //========================================================================
 describe('==== login ====', function() {
-  describe('login-00', function() {
-    
-  });
+	//setup fresh server before each test
+	beforeEach(function() {
+		//delete the cached server instance to properly restart the server
+		delete require.cache[require.resolve('../app')];
+		server = require('../app')
+	});
 
-  describe('login-01', function() {
-    
-  });
+	//close the server after each test
+	afterEach(function(done) {
+		server.close(done);//close server, pass done as callback.
+	})
 
-  describe('login-02', function() {
-    
-  });
+	describe('login-00', function() {
 
-  describe('login-03', function() {
-    
-  });
+	});
+
+	describe('login-01', function() {
+
+	});
+
+	describe('login-02', function() {
+
+	});
+
+	describe('login-03', function() {
+
+	});
 });//========================================================================
 
 
