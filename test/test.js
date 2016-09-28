@@ -1,61 +1,80 @@
 //include testing libraries
 var should = require('should');//assertion library https://github.com/shouldjs/should.js
-var request = require('request');//used to make HTTP request to test server
+var Promise = require('bluebird');//used to convert callback funtions to promise functions
+var request = Promise.promisifyAll(require('request'));//used to make HTTP request to test server
+
+
+//database connection
+var mongoose = require('mongoose');
+mongoose.Promise = Promise;//use bluebird promises
 
 //include resistance-game libraries
-var User = require('../app/models/user');//user object schema
-var Game = require('./models/game.js');//game object schema
+var User = require('../app/models/user.js');//user object schema
+var Game = require('../app/models/game.js');//game object schema
 var gameplay = require('../app/gameplay.js');//game interaction
 
 //define global testing variables
-var appURL = 'localhost:3000';//base url for the running server
-var server = require('../app');//used to instantiate new servers.
-
-//========================================================================
-//this is a sample of code for testing an Array
-//========================================================================
-describe('Array', function() {
-	describe('#indexOf()', function() {
-	//using should library
-		it('should return -1 when the value is not present (shouldjs)', function() {
-			[1,2,3].indexOf(4).should.equal(-1);
-		});
-	});
-});//========================================================================
-
-
+var appURL = 'http://localhost:3000';//base url for the running server
+var server = Promise.promisifyAll(require('../app.js'));//used to instantiate new servers.
 
 //========================================================================
 //Login functionality
 //========================================================================
 describe('==== login ====', function() {
 	//setup fresh server before each test
-	beforeEach(function() {
-		//delete the cached server instance to properly restart the server
-		delete require.cache[require.resolve('../app')];
-		server = require('../app')
+	beforeEach(function(done) {
+		server.restartAsync().then(done);
 	});
 
-	//close the server after each test
-	afterEach(function(done) {
-		server.close(done);//close server, pass done as callback.
-	})
 
-	describe('login-00', function() {
+	//successful login--------------------------------------------------------------
+	it('should pass testcase login-00', function(done) {
+		this.timeout(10000);
+		var testUser = new User();
 
-	});
+		//add user info
+		testUser.username = "testEntry";
+		testUser.password = testUser.generateHash("testEntry");
 
-	describe('login-01', function() {
 
-	});
+		//save user to db
+		testUser.save()
+		.then(function() {
+			//try to login with valid credentials
+			request.post({url: appURL + '/login', form:{ username: "testEntry", password: "testEntry"}}, 
+				function (err, response, body) {
+					//assert that server responded with a redirect to profile
+					should.not.exist(err);
+					should.exist(body);
+					body.should.endWith('profile');
+					//remove test user from DB
+					testUser.remove(done);
+				});
+		});
+	});//-----------------------------------------------------------------------------
 
-	describe('login-02', function() {
+	//unsuccessful login--------------------------------------------------------------
+	it('should pass testcase login-01', function(done) {
+		this.timeout(10000);
+		
+		//try to login with invalid credentials
+		request.post({url: appURL + '/login', form:{ username: "missingEntry", password: "missingEntry"}}, 
+			function (err, response, body) {
+				//assert that server responded with a redirect to login
+				body.should.endWith('login');
+				done();
+			});
+	});//-----------------------------------------------------------------------------
 
-	});
+	//successful FB login--------------------------------------------------------------
+	it('should pass testcase login-02', function() {
+		//not implemented
+	});//-----------------------------------------------------------------------------
 
-	describe('login-03', function() {
-
-	});
+	//unsuccessful FB login--------------------------------------------------------------
+	it('should pass testcase login-03', function() {
+		//not implemented
+	});//-----------------------------------------------------------------------------
 });//========================================================================
 
 
@@ -64,23 +83,23 @@ describe('==== login ====', function() {
 //Registration functionality
 //========================================================================
 describe('==== register ====', function() {
-  describe('register-00', function() {
+  it('should pass testcase register-00', function() {
     
   });
 
-  describe('register-01', function() {
+  it('should pass testcase register-01', function() {
     
   });
 
-  describe('register-02', function() {
+  it('should pass testcase register-02', function() {
     
   });
 
-  describe('register-03', function() {
+  it('should pass testcase register-03', function() {
     
   });
 
-  describe('register-04', function() {
+  it('should pass testcase register-04', function() {
     
   });
 });//========================================================================
@@ -91,7 +110,7 @@ describe('==== register ====', function() {
 //Logout functionality
 //========================================================================
 describe('==== logout ====', function() {
-  describe('logout-00', function() {
+  it('should pass testcase logout-00', function() {
     
   });
 });//========================================================================
@@ -102,19 +121,19 @@ describe('==== logout ====', function() {
 //Game creation functionality
 //========================================================================
 describe('==== createGame ====', function() {
-  describe('createGame-00', function() {
+  it('should pass testcase createGame-00', function() {
     
   });
 
-  describe('createGame-01', function() {
+  it('should pass testcase createGame-01', function() {
     
   });
 
-  describe('createGame-02', function() {
+  it('should pass testcase createGame-02', function() {
     
   });
 
-  describe('createGame-03', function() {
+  it('should pass testcase createGame-03', function() {
     
   });
 });//========================================================================
@@ -125,15 +144,15 @@ describe('==== createGame ====', function() {
 //Join game functionality
 //========================================================================
 describe('==== joinGame ====', function() {
-  describe('joinGame-00', function() {
+  it('should pass testcase joinGame-00', function() {
     
   });
 
-  describe('joinGame-01', function() {
+  it('should pass testcase joinGame-01', function() {
     
   });
 
-  describe('joinGame-02', function() {
+  it('should pass testcase joinGame-02', function() {
     
   });
 });//========================================================================
@@ -144,23 +163,23 @@ describe('==== joinGame ====', function() {
 //End game functionality
 //========================================================================
 describe('==== endGame ====', function() {
-  describe('endGame-00', function() {
+  it('should pass testcase endGame-00', function() {
     
   });
 
-  describe('endGame-01', function() {
+  it('should pass testcase endGame-01', function() {
     
   });
 
-  describe('endGame-02', function() {
+  it('should pass testcase endGame-02', function() {
     
   });
 
-  describe('endGame-03', function() {
+  it('should pass testcase endGame-03', function() {
     
   });
 
-  describe('endGame-04', function() {
+  it('should pass testcase endGame-04', function() {
     
   });
 });//========================================================================
@@ -171,11 +190,11 @@ describe('==== endGame ====', function() {
 //server start functionality
 //========================================================================
 describe('==== startServer ====', function() {
-  describe('startServer-00', function() {
+  it('should pass testcase startServer-00', function() {
     
   });
 
-  describe('startServer-01', function() {
+  it('should pass testcase startServer-01', function() {
     
   });
 });//========================================================================
@@ -186,15 +205,15 @@ describe('==== startServer ====', function() {
 //Leadership functionality
 //========================================================================
 describe('==== leadership ====', function() {
-  describe('leadership-00', function() {
+  it('should pass testcase leadership-00', function() {
     
   });
 
-  describe('leadership-01', function() {
+  it('should pass testcase leadership-01', function() {
     
   });
 
-  describe('leadership-02', function() {
+  it('should pass testcase leadership-02', function() {
     
   });
 });//========================================================================
@@ -205,19 +224,19 @@ describe('==== leadership ====', function() {
 //Group selection functionality
 //========================================================================
 describe('==== groupSelect ====', function() {
-  describe('groupSelect-00', function() {
+  it('should pass testcase groupSelect-00', function() {
     
   });
 
-  describe('groupSelect-01', function() {
+  it('should pass testcase groupSelect-01', function() {
     
   });
 
-  describe('groupSelect-02', function() {
+  it('should pass testcase groupSelect-02', function() {
     
   });
 
-  describe('groupSelect-03', function() {
+  it('should pass testcase groupSelect-03', function() {
     
   });
 });//========================================================================
@@ -228,31 +247,31 @@ describe('==== groupSelect ====', function() {
 //Mission functionality
 //========================================================================
 describe('==== mission ====', function() {
-  describe('mission-00', function() {
+  it('should pass testcase mission-00', function() {
     
   });
 
-  describe('mission-01', function() {
+  it('should pass testcase mission-01', function() {
     
   });
 
-  describe('mission-02', function() {
+  it('should pass testcase mission-02', function() {
     
   });
 
-  describe('mission-03', function() {
+  it('should pass testcase mission-03', function() {
     
   });
 
-  describe('mission-04', function() {
+  it('should pass testcase mission-04', function() {
     
   });
 
-  describe('mission-05', function() {
+  it('should pass testcase mission-05', function() {
     
   });
 
-  describe('mission-06', function() {
+  it('should pass testcase mission-06', function() {
     
   });
 });//========================================================================

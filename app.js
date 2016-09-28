@@ -27,7 +27,7 @@ mongoose.connect(configDB.url);//connect to our DB
 require('./config/passport')(passport);
 
 //setup express
-app.use(morgan('dev')); //log every request to the console
+//app.use(morgan('dev')); //log every request to the console
 app.use(cookieParser()); //read cookies
 app.use(bodyParser()); //read html forms
 app.use(express.static('public'));
@@ -50,7 +50,15 @@ io.on('connection', function(socket) {
 	});
 });
 
-//start the server.
+//start server
 http.listen(port, function() {
 	console.log("Listening on port " + port);
 });
+
+var server = {}
+server.restart = function(done) {
+	http.close(function() {
+		http.listen(port, done);
+	});
+}
+module.exports = server;
