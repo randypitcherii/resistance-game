@@ -172,10 +172,19 @@ describe('==== register ====', function() {
 //========================================================================
 //Logout functionality
 //========================================================================
-describe('==== logout ====', function() {
-  it('should pass testcase logout-00', function() {
-    
-  });
+describe('==== logout ====', function(done) {
+	//setup fresh server before each test
+	beforeEach(function(done) {
+		server.restartAsync().then(done);
+	});
+
+	it('should pass testcase logout-00', function(done) {
+		//simply send a logout get request and ensure user is redirected home
+		request(appURL, function(err, response, body){
+			body.should.endWith("</html>");//end of home page file
+			done();
+		}.bind({done: done}));
+	});
 });//========================================================================
 
 
