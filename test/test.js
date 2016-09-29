@@ -83,59 +83,87 @@ describe('==== login ====', function() {
 //Registration functionality
 //========================================================================
 describe('==== register ====', function() {
-	var testCredential = 'testUser';
-
 	//setup fresh server before each test
 	beforeEach(function(done) {
 		server.restartAsync().then(done);
 	});
 
-	afterEach(function(done) {
+	after(function(done) {
 		this.timeout(10000);
 		//remove test user from database
-		function(done){
-			User.findOne({'username': testCredential}, function(err, user) {
-				should.not.exist(err);
-				//remove the user if it is found
-				if(user) {
-					console.log('got here');
-					user.remove(done);
-				}
-			});
-		}(done);
+		User.findOne({'username': "testUser"}, function(err, user) {
+			should.not.exist(err);
+			//remove the user if it is found
+			if(user) {
+				user.remove(done);
+			} else {
+				//just return now
+				done();
+			}
+		});
 	});
 
 	//successful registration--------------------------------------------------------------
-	it('should pass testcase register-00', function() {
+	it('should pass testcase register-00', function(done) {
 		this.timeout(10000);
 		
-		//try to login with invalid credentials
-		request.post({url: appURL + '/signup', form:{ username: testCredential, password: testCredential}}, 
+		//try to create account with valid credentials
+		request.post({url: appURL + '/signup', form:{ username: "testUser", password: "testPassword"}}, 
 		function (err, response, body) {
-			//assert that server responded with a redirect to login
+			//assert that server responded with a redirect to profile
 			body.should.endWith('profile');
 			done();
-		});
+		}.bind({done: done}));
 	});//-----------------------------------------------------------------------------
 
 	//invalid username--------------------------------------------------------------
-	it('should pass testcase register-01', function() {
-
+	it('should pass testcase register-01', function(done) {
+		this.timeout(10000);
+		
+		//try to create a new account with the same username
+		request.post({url: appURL + '/signup', form:{ username: "testUser", password: "newTestPassword"}}, 
+		function (err, response, body) {
+			//assert that server responded with a redirect to signup
+			body.should.endWith('signup');
+			done();
+		}.bind({done: done}));
 	});//-----------------------------------------------------------------------------
 
 	//invalid password--------------------------------------------------------------
-	it('should pass testcase register-02', function() {
-
+	it('should pass testcase register-02', function(done) {
+		//try to create a new account with a new username and an empty password
+		request.post({url: appURL + '/signup', form:{ username: "newTestUsername", password: ""}}, 
+		function (err, response, body) {
+			//assert that server responded with a redirect to signup
+			body.should.endWith('signup');
+			done();
+		}.bind({done: done}));
 	});//-----------------------------------------------------------------------------
 
 	//username too large--------------------------------------------------------------
-	it('should pass testcase register-03', function() {
-
+	it('should pass testcase register-03', function(done) {
+		//try to create a new account with a massive username
+		var namePart = "1234567890";
+		var massiveUsername = namePart + namePart + namePart + namePart + namePart + namePart;//60 chars long
+		request.post({url: appURL + '/signup', form:{ username: massiveUsername, password: "testPassword"}}, 
+		function (err, response, body) {
+			//assert that server responded with a redirect to signup
+			body.should.endWith('signup');
+			done();
+		}.bind({done: done}));
 	});//-----------------------------------------------------------------------------
 
 	//password too large--------------------------------------------------------------
-	it('should pass testcase register-04', function() {
-
+	it('should pass testcase register-04', function(done) {
+		//try to create a new account with a massive password
+		var pwPart = "1234567890";
+		var massivePassword = pwPart + pwPart + pwPart + pwPart + pwPart + pwPart;//60 chars long
+		request.post({url: appURL + '/signup', form:{ username: "lastTestUser", password: massivePassword}}, 
+		function (err, response, body) {
+			//assert that server responded with a redirect to signup
+			body.should.endWith('signup');
+			done();
+		}.bind({done: done}));
 	});//-----------------------------------------------------------------------------
 });//========================================================================
 
