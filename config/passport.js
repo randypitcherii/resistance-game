@@ -26,6 +26,14 @@ module.exports = function(passport) {
 
 	function(req, username, password, done) {
 		process.nextTick(function() {
+			//check username and password length requirements
+			if (password.length === 0 || username.length === 0) {
+				return done(null, false, req.flash('signupMessage', 'Cannot accept empty username or password'));
+			}
+			if (password.length > 50 || username.length > 50) {
+				var flashMessage = 'Neither username nor password may be longer than 50 characters.';
+				return done(null, false, req.flash('signupMessage', flashMessage));
+			}
 			//find user if they exist
 			User.findOne({'username' : username}, function(err, user) {
 				if (err) {

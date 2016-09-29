@@ -83,25 +83,60 @@ describe('==== login ====', function() {
 //Registration functionality
 //========================================================================
 describe('==== register ====', function() {
-  it('should pass testcase register-00', function() {
-    
-  });
+	var testCredential = 'testUser';
 
-  it('should pass testcase register-01', function() {
-    
-  });
+	//setup fresh server before each test
+	beforeEach(function(done) {
+		server.restartAsync().then(done);
+	});
 
-  it('should pass testcase register-02', function() {
-    
-  });
+	afterEach(function(done) {
+		this.timeout(10000);
+		//remove test user from database
+		function(done){
+			User.findOne({'username': testCredential}, function(err, user) {
+				should.not.exist(err);
+				//remove the user if it is found
+				if(user) {
+					console.log('got here');
+					user.remove(done);
+				}
+			});
+		}(done);
+	});
 
-  it('should pass testcase register-03', function() {
-    
-  });
+	//successful registration--------------------------------------------------------------
+	it('should pass testcase register-00', function() {
+		this.timeout(10000);
+		
+		//try to login with invalid credentials
+		request.post({url: appURL + '/signup', form:{ username: testCredential, password: testCredential}}, 
+		function (err, response, body) {
+			//assert that server responded with a redirect to login
+			body.should.endWith('profile');
+			done();
+		});
+	});//-----------------------------------------------------------------------------
 
-  it('should pass testcase register-04', function() {
-    
-  });
+	//invalid username--------------------------------------------------------------
+	it('should pass testcase register-01', function() {
+
+	});//-----------------------------------------------------------------------------
+
+	//invalid password--------------------------------------------------------------
+	it('should pass testcase register-02', function() {
+
+	});//-----------------------------------------------------------------------------
+
+	//username too large--------------------------------------------------------------
+	it('should pass testcase register-03', function() {
+
+	});//-----------------------------------------------------------------------------
+
+	//password too large--------------------------------------------------------------
+	it('should pass testcase register-04', function() {
+
+	});//-----------------------------------------------------------------------------
 });//========================================================================
 
 
