@@ -88,6 +88,7 @@ describe('==== register ====', function() {
 		server.restartAsync().then(done);
 	});
 
+	//remove test user from the database after this test set
 	after(function(done) {
 		this.timeout(10000);
 		//remove test user from database
@@ -178,13 +179,14 @@ describe('==== logout ====', function(done) {
 		server.restartAsync().then(done);
 	});
 
+	//successful logout--------------------------------------------------------------
 	it('should pass testcase logout-00', function(done) {
 		//simply send a logout get request and ensure user is redirected home
 		request(appURL, function(err, response, body){
 			body.should.endWith("</html>");//end of home page file
 			done();
 		}.bind({done: done}));
-	});
+	});//-----------------------------------------------------------------------------
 });//========================================================================
 
 
@@ -193,21 +195,21 @@ describe('==== logout ====', function(done) {
 //Game creation functionality
 //========================================================================
 describe('==== createGame ====', function() {
-  it('should pass testcase createGame-00', function() {
-    
-  });
+	it('should pass testcase createGame-00', function() {
 
-  it('should pass testcase createGame-01', function() {
-    
-  });
+	});
 
-  it('should pass testcase createGame-02', function() {
-    
-  });
+	it('should pass testcase createGame-01', function() {
 
-  it('should pass testcase createGame-03', function() {
-    
-  });
+	});
+
+	it('should pass testcase createGame-02', function() {
+
+	});
+
+	it('should pass testcase createGame-03', function() {
+
+	});
 });//========================================================================
 
 
@@ -216,17 +218,17 @@ describe('==== createGame ====', function() {
 //Join game functionality
 //========================================================================
 describe('==== joinGame ====', function() {
-  it('should pass testcase joinGame-00', function() {
-    
-  });
+	it('should pass testcase joinGame-00', function() {
 
-  it('should pass testcase joinGame-01', function() {
-    
-  });
+	});
 
-  it('should pass testcase joinGame-02', function() {
-    
-  });
+	it('should pass testcase joinGame-01', function() {
+
+	});
+
+	it('should pass testcase joinGame-02', function() {
+
+	});
 });//========================================================================
 
 
@@ -235,25 +237,25 @@ describe('==== joinGame ====', function() {
 //End game functionality
 //========================================================================
 describe('==== endGame ====', function() {
-  it('should pass testcase endGame-00', function() {
-    
-  });
+	it('should pass testcase endGame-00', function() {
 
-  it('should pass testcase endGame-01', function() {
-    
-  });
+	});
 
-  it('should pass testcase endGame-02', function() {
-    
-  });
+	it('should pass testcase endGame-01', function() {
 
-  it('should pass testcase endGame-03', function() {
-    
-  });
+	});
 
-  it('should pass testcase endGame-04', function() {
-    
-  });
+	it('should pass testcase endGame-02', function() {
+
+	});
+
+	it('should pass testcase endGame-03', function() {
+
+	});
+
+	it('should pass testcase endGame-04', function() {
+
+	});
 });//========================================================================
 
 
@@ -262,13 +264,21 @@ describe('==== endGame ====', function() {
 //server start functionality
 //========================================================================
 describe('==== startServer ====', function() {
-  it('should pass testcase startServer-00', function() {
-    
-  });
+	//server starts successfully --------------------------------------------------------------
+	it('should pass testcase startServer-00', function(done) {
+		//if a connection does not timeout, good to go.
+		server.restartAsync().then(done);//if something goes wrong, done won't execute
+	});//-----------------------------------------------------------------------------
 
-  it('should pass testcase startServer-01', function() {
-    
-  });
+	//server responds to requests--------------------------------------------------------------
+	it('should pass testcase startServer-01', function(done) {
+		//any response will be acceptable 
+		request(appURL, function(err, res, body) {
+			should.not.exist(err);
+			should.exist(body);
+			done();
+		}.bind({done: done}));
+	});//-----------------------------------------------------------------------------
 });//========================================================================
 
 
@@ -277,17 +287,17 @@ describe('==== startServer ====', function() {
 //Leadership functionality
 //========================================================================
 describe('==== leadership ====', function() {
-  it('should pass testcase leadership-00', function() {
-    
-  });
+	it('should pass testcase leadership-00', function() {
 
-  it('should pass testcase leadership-01', function() {
-    
-  });
+	});
 
-  it('should pass testcase leadership-02', function() {
-    
-  });
+	it('should pass testcase leadership-01', function() {
+
+	});
+
+	it('should pass testcase leadership-02', function() {
+
+	});
 });//========================================================================
 
 
@@ -296,21 +306,21 @@ describe('==== leadership ====', function() {
 //Group selection functionality
 //========================================================================
 describe('==== groupSelect ====', function() {
-  it('should pass testcase groupSelect-00', function() {
-    
-  });
+	it('should pass testcase groupSelect-00', function() {
 
-  it('should pass testcase groupSelect-01', function() {
-    
-  });
+	});
 
-  it('should pass testcase groupSelect-02', function() {
-    
-  });
+	it('should pass testcase groupSelect-01', function() {
 
-  it('should pass testcase groupSelect-03', function() {
-    
-  });
+	});
+
+	it('should pass testcase groupSelect-02', function() {
+
+	});
+
+	it('should pass testcase groupSelect-03', function() {
+
+	});
 });//========================================================================
 
 
@@ -319,33 +329,33 @@ describe('==== groupSelect ====', function() {
 //Mission functionality
 //========================================================================
 describe('==== mission ====', function() {
-  it('should pass testcase mission-00', function() {
-    
-  });
+	it('should pass testcase mission-00', function() {
 
-  it('should pass testcase mission-01', function() {
-    
-  });
+	});
 
-  it('should pass testcase mission-02', function() {
-    
-  });
+	it('should pass testcase mission-01', function() {
 
-  it('should pass testcase mission-03', function() {
-    
-  });
+	});
 
-  it('should pass testcase mission-04', function() {
-    
-  });
+	it('should pass testcase mission-02', function() {
 
-  it('should pass testcase mission-05', function() {
-    
-  });
+	});
 
-  it('should pass testcase mission-06', function() {
-    
-  });
+	it('should pass testcase mission-03', function() {
+
+	});
+
+	it('should pass testcase mission-04', function() {
+
+	});
+
+	it('should pass testcase mission-05', function() {
+
+	});
+
+	it('should pass testcase mission-06', function() {
+
+	});
 });//========================================================================
 
 
