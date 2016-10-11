@@ -1,7 +1,7 @@
 //Declare global page variable holder
 var gameInfo = {};
 gameInfo.gameIsLoading = false;//used to differentiate between a user leaving and the start of a game
-var minNumberOfPlayers = 2;
+var minNumberOfPlayers = 5;//when debugging, make this 2 so you don't need to log in 5 different users.
 //initialize the websocket
 var socket = io();
 
