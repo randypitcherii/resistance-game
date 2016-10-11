@@ -54,6 +54,12 @@ module.exports = function(app, passport) {
 		});
 	});
 
+	//start game
+	app.get('/startGame', isLoggedIn, function(req, res) {
+		//for now just redirecting, but later we need to ensure the user is in a game
+		res.render('game.ejs', {user: req.user});
+	});
+
 	//login
 	app.get('/login', function(req, res) {
 		//load login page with any flash data if it exists

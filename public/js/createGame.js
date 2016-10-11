@@ -1,5 +1,7 @@
 //Declare global page variable holder
 var gameInfo = {};
+gameInfo.gameIsLoading = false;//used to differentiate between a user leaving and the start of a game
+var minNumberOfPlayers = 2;
 //initialize the websocket
 var socket = io();
 
@@ -18,6 +20,17 @@ $(document).ready(function() {
     socket.emit('join', gameInfo);
     socket.emit('newPlayer_join', gameInfo);
 });
+
+function startGame(leaderGameInfo) {
+    gameInfo.gameIsLoading = true;
+    window.location.href = "/startGame";
+}
+
+//function for initiating the start of a game
+function startGameButtonHandler() {
+    socket.emit('startGame', gameInfo);
+    startGame(gameInfo);
+}
 
 //function for updating html to update currentPlayers
 function updateCurrentPlayersTable() {
@@ -38,7 +51,7 @@ function updateStartGameButtonVisibility() {
     //get number of players
     var numPlayers = gameInfo.currentPlayers.length;
 
-    if (isCreator && (numPlayers >= 5)) {
+    if (isCreator && (numPlayers >= minNumberOfPlayers)) {
         //this is the game creator and there are enough players. Show start game option
         $("#startGameButton").show();
     } else {
@@ -46,6 +59,18 @@ function updateStartGameButtonVisibility() {
         $("#startGameButton").hide();
     }
 }
+
+//this will execute when a user leaves this page. If the user
+//is not being redirected to a game, inform the other clients
+//that this user is canceling.
+window.onbeforeunload = function(event) {
+    if (gameInfo.gameIsLoading) {
+        return;//do nothing if the game is loading
+    }
+
+    //to get here, the game is not loading. User must have closed or went to a new page
+    socket.emit('newPlayer_remove', gameInfo);
+};
 
 //Handle an incoming newPlayer signal
 socket.on('newPlayer_join', function(newUsername) {
@@ -68,7 +93,13 @@ socket.on('newPlayer_remove', function(newUsername) {
         return;// game already removed the newUsername and handled the situation.
     }
 
-    //to get here, newUsername must still be in currentPlayers. Remove it now.
+    //if the game leader has canceled, inform the client and return to profile page
+    if (newUsername === gameInfo.gameID && newUsername !== gameInfo.username) {
+        alert("The game leader, " + newUsername + ", has canceled the game. You will now be returned to your profile page.");
+        window.location.href = "/profile";//redirect to profile
+    }
+
+    //to get here, newUsername must still be in currentPlayers and is not the game leader. Remove it now.
     var indexToRemove = gameInfo.currentPlayers.indexOf(newUsername);
     gameInfo.currentPlayers.splice(indexToRemove, 1);//remove 1 entry at index=indexToRemove
     updateCurrentPlayersTable();//update the html display to the user with the new player
@@ -76,6 +107,6 @@ socket.on('newPlayer_remove', function(newUsername) {
 });
 
 //Handle an incoming newPlayer signal
-socket.on('startGame', function(gameInfo) {
-
+socket.on('startGame', function(leaderGameInfo) {
+    startGame(leaderGameInfo);//start the game
 });

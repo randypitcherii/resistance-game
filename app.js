@@ -51,6 +51,7 @@ io.on('connection', function(socket) {
 		socket.join(gameInfo.gameID);
 	});
 
+	//===============================================================
 	//emit new player name to all clients in this channel
 	socket.on('newPlayer_join', function(gameInfo) {
 		console.log(gameInfo.username + " is a new player in " + gameInfo.gameID);
@@ -60,6 +61,11 @@ io.on('connection', function(socket) {
 	//emit new player name to all clients in this channel
 	socket.on('newPlayer_remove', function(gameInfo) {
 		io.to(gameInfo.gameID).emit('newPlayer_remove', gameInfo.username);
+	});
+
+	//Emit the startGame signal to all clients when game leader starts game
+	socket.on('startGame', function(gameInfo) {
+	    io.to(gameInfo.gameID).emit('startGame', gameInfo);
 	});
 });
 
