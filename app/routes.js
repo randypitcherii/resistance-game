@@ -22,12 +22,12 @@ module.exports = function(app, passport) {
 	//createGame
 	app.get('/createGame', isLoggedIn, function(req, res) {
 		//load signup page with any flash data if it exists
-		gameplay.createGame(req, res, function(req, res, err){
+		gameplay.createGame(req, res, function(req, res, err, players){
 			if (err) {
 				throw err;
 			}
 
-			res.render('createGame.ejs', { user: req.user, isCreator: true});
+			res.render('createGame.ejs', { user: req.user, isCreator: true, players: players});
 		});
 	});
 
@@ -39,13 +39,13 @@ module.exports = function(app, passport) {
 
 	//process game joining
 	app.post('/joinGame', isLoggedIn, function(req, res) {
-		gameplay.joinGame(req, res, function(req, res, err, wasFound){
+		gameplay.joinGame(req, res, function(req, res, err, wasFound, players){
 			if (err) {
 				throw err;
 			}
 			//continue to createGame room if game was found
 			if (wasFound) {
-				res.render('createGame.ejs', {user: req.user, isCreator: false});
+				res.render('createGame.ejs', {user: req.user, isCreator: false, players: players});
 
 			//if game was not found, redirect to join game again.
 			} else {

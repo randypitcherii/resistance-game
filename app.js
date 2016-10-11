@@ -45,8 +45,21 @@ require('./app/routes.js')(app, passport);
 
 //establish socket listener
 io.on('connection', function(socket) {
-	socket.on('join', function(username) {
-		socket.join(gameID);
+	//add socket to the gameID communication channel
+	socket.on('join', function(gameInfo) {
+		console.log(gameInfo.username + " is joining " + gameInfo.gameID);
+		socket.join(gameInfo.gameID);
+	});
+
+	//emit new player name to all clients in this channel
+	socket.on('newPlayer_join', function(gameInfo) {
+		console.log(gameInfo.username + " is a new player in " + gameInfo.gameID);
+		io.to(gameInfo.gameID).emit('newPlayer_join', gameInfo.username);
+	});
+
+	//emit new player name to all clients in this channel
+	socket.on('newPlayer_remove', function(gameInfo) {
+		io.to(gameInfo.gameID).emit('newPlayer_remove', gameInfo.username);
 	});
 });
 

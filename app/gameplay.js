@@ -8,7 +8,7 @@ gameplay.createGame = function(req, res, done) {
 	req.user.currentGameID = req.user.username;
 	req.user.save(function(err) {
 		if (err) {
-			return done(req, res, err);
+			return done(req, res, err, null);
 		}
 		//instantiate new game
 		newGame = new Game();
@@ -20,7 +20,7 @@ gameplay.createGame = function(req, res, done) {
 		newGame.currentLeader = "";//current leader not yet defined
 
 		newGame.save(function(err) {
-			done(req, res, err);
+			done(req, res, err, newGame.players);
 		});
 	});
 }
@@ -32,7 +32,7 @@ gameplay.joinGame = function(req, res, done) {
 
 	Game.findOne({'gameID': gameID}, function(err, thisGame) {
 		if (err) {
-			return done(req, res, err, null);
+			return done(req, res, err, null, null);
 		}
 
 		//if game exists, add new player and save game
@@ -48,20 +48,20 @@ gameplay.joinGame = function(req, res, done) {
 			thisGameID = thisGame.gameID;
 			thisGame.save(function(err) {
 				if (err) {
-					return done(req, res, err, null);
+					return done(req, res, err, null, null);
 				}
 
 				//update this user's profile with current gameID
 				newUser.currentGameID = thisGameID;
 				newUser.save(function(err){
-					done(req, res, err, true);
+					done(req, res, err, true, thisGame.players);
 				});
 			});
 
 		//if game doesn't exist, inform client
 		} else {
 			req.flash('joinMessage', 'Game not found. Try again.');
-			done(req, res, err, false);
+			done(req, res, err, false, null);
 		}
 	});
 }
