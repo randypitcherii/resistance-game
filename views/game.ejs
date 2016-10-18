@@ -11,21 +11,45 @@
         }
     </style>
 </head>
-<div class="container">
-    <div class="jumbotron col-md-8 col-md-offset-2 col-xs-12">
-        <div class="page-header text-center">
-            <h1>
-                <span class="fa fa-star"></span> 
-                Hello <%= user.username %> 
-                <span class="fa fa-star"></span>
-            </h1>
-            <h1>This is the gameplay page. Nothing here yet.</h1>
-        </div>
+<body>
+    <div class="container">
+        <div class="jumbotron col-md-8 col-md-offset-2 col-xs-12">
+            <div class="page-header text-center">
+                <h2>Current user: <%=user.username%></h2>
+            </div>
 
-        <div class="row text-center">
-            <h1> Game ID is: <%= user.currentGameID %></h1>
+            <div class="row" id="gameInformation">
+                <h2>Game ID is: <strong><%= user.currentGameID %></strong></h2>
+                <h2>Current leader: <div id="currentLeader"></div></h2>
+                <h2>Current round: <div id="currentRound">1</div></h2>
+                <h2>Passed missions in a row: <div id="passedMissionsInARow">0</div></h2>
+                <h2>Resistance score: <div id="resistanceScore"></div></h2>
+                <h2>Spies score: <div id="spiesScore"></div></h2>
+            </div>
+
+            <div class="row text-center" id="currentPlayers">
+                <button class="btn btn-lg btn-primary" id="selectMissionMembersButton" disabled>Select mission members</button>
+                <br>
+                <button class="btn btn-lg btn-error" disabled>Quit game</button>
+            </div>
+
+            <div hidden>
+                <p id="username"><%=user.username%></p>
+                <p id="gameID"><%=user.currentGameID%></p>
+            </div>
+
+            <div class="row text-center">
+                <button onclick="location.href = '/profile';" id="myButton" class="btn btn-warning btn-lg" >Back</button>
+                <button style="display: none;" onclick="startGameButtonHandler();" id="startGameButton" class="btn btn-primary btn-lg" >Start game</button>
+            </div>
+
+            
         </div>
     </div>
-</div>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="js/createGame.js"></script>
 </body>
 </html>
