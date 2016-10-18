@@ -1,8 +1,9 @@
 //Declare global page variable holder
 var gameInfo = {};
 var username = "";
-var isGameOwner = false;//initially false
-var isCurrentLeader = false;//initially false
+var isGameOwner = false;
+var isCurrentLeader = false;
+var gameIsOver = false;
 //initialize the websocket
 var socket = io();
 
@@ -25,6 +26,13 @@ $(document).ready(function() {
     //join game room 
     socket.emit('join', gameInfo);
     init();//initialize game
+
+    //setup modal listener
+    $("#selectMissionMembersButton").click(function(){
+        $("#missionSelectionModal").modal({backdrop: "static"});
+    });
+
+    $("#selectMissionMembersButton").click();
 });
 
 //the game owner is responsible for initializing the game
@@ -88,17 +96,23 @@ function missionSelectionVote() {
 
 
 window.onbeforeunload = function(event) {
-    socket.emit("gameOver", {gameID: gameInfo.gameID, winners: 'none', quitter: username});
+    if (!gameIsOver) {//prevents onbeforeunload callback from firing another gameOver
+        socket.emit("gameOver", {gameID: gameInfo.gameID, winners: 'none', quitter: username});
+    }
 };
 
 //Handle when a gameOver signal is received. Either a team has won or someone quit
 socket.on('gameOver', function(info) {
+    gameIsOver = true;
     if (info.winners === 'spies') {
         alert("The spies have won!");
     } else if (info.winners === 'resistance') {
         alert("The resistance has won!");
     } else {
         //someone must have quit
+        if (username === info.quitter) {
+            return;//nothing to do
+        }
         alert(info.quitter + " has quit the game. Game over.");
     }
 

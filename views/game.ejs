@@ -51,7 +51,24 @@
                     <h4 class="modal-title">Select mission members</h4>
                 </div>
                 <div class="modal-body">
-
+                    <div class="row">
+                    <div class="col-xs-12">
+                        <br>
+                        <select class="form-control upperCushion" id="missionMember0">
+                            <option selected disabled>Choose first player</option>
+                            <% players.forEach(function(player) { %>
+                                <option><%= player %></option>
+                            <% }); %>
+                        </select>
+                        <select class="form-control upperCushion" id="missionMember1">
+                            <option selected disabled>Choose first player</option>
+                            <% players.forEach(function(player) { %>
+                                <option value=<%= player %>><%= player %></option>
+                            <% }); %>
+                        </select>
+                        <br>
+                    </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-primary" onclick="missionSelectionVote();">Vote!</button>
