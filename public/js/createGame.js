@@ -21,7 +21,7 @@ $(document).ready(function() {
     socket.emit('newPlayer_join', gameInfo);
 });
 
-function startGame(leaderGameInfo) {
+function startGame(ownerGameInfo) {
     gameInfo.gameIsLoading = true;
     window.location.href = "/startGame";
 }
@@ -93,13 +93,13 @@ socket.on('newPlayer_remove', function(newUsername) {
         return;// game already removed the newUsername and handled the situation.
     }
 
-    //if the game leader has canceled, inform the client and return to profile page
+    //if the game owner has canceled, inform the client and return to profile page
     if (newUsername === gameInfo.gameID && newUsername !== gameInfo.username) {
-        alert("The game leader, " + newUsername + ", has canceled the game. You will now be returned to your profile page.");
+        alert("The game owner, " + newUsername + ", has canceled the game. You will now be returned to your profile page.");
         window.location.href = "/profile";//redirect to profile
     }
 
-    //to get here, newUsername must still be in currentPlayers and is not the game leader. Remove it now.
+    //to get here, newUsername must still be in currentPlayers and is not the game owner. Remove it now.
     var indexToRemove = gameInfo.currentPlayers.indexOf(newUsername);
     gameInfo.currentPlayers.splice(indexToRemove, 1);//remove 1 entry at index=indexToRemove
     updateCurrentPlayersTable();//update the html display to the user with the new player
@@ -107,6 +107,6 @@ socket.on('newPlayer_remove', function(newUsername) {
 });
 
 //Handle an incoming newPlayer signal
-socket.on('startGame', function(leaderGameInfo) {
-    startGame(leaderGameInfo);//start the game
+socket.on('startGame', function(ownerGameInfo) {
+    startGame(ownerGameInfo);//start the game
 });

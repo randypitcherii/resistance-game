@@ -2,54 +2,77 @@
 <html>
 <head>
     <title>Resistance!</title>
-    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css"> <!-- load bootstrap css -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"><!-- load bootstrap css -->
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"> <!-- load fontawesome -->
     <style>
         body { 
             padding-top:80px;
             background-color: #263238; 
         }
+
+        .upperCushion {
+            margin-top: 15px;
+        }
+
+        .hide {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="jumbotron col-md-8 col-md-offset-2 col-xs-12">
-            <div class="page-header text-center">
+            <div class="text-center">
                 <h2>Current user: <%=user.username%></h2>
             </div>
 
             <div class="row" id="gameInformation">
-                <h2>Game ID is: <strong><%= user.currentGameID %></strong></h2>
-                <h2>Current leader: <div id="currentLeader"></div></h2>
-                <h2>Current round: <div id="currentRound">1</div></h2>
-                <h2>Passed missions in a row: <div id="passedMissionsInARow">0</div></h2>
-                <h2>Resistance score: <div id="resistanceScore"></div></h2>
-                <h2>Spies score: <div id="spiesScore"></div></h2>
+                <h2><strong>Game ID is:</strong> <%= user.currentGameID %></h2>
+                <h2><strong>Current leader:</strong> <span id="currentLeader">loading...</span></h2>
+                <h2><strong>Current round:</strong> <span id="currentRound">1</span></h2>
+                <h2><strong>Passed missions in a row:</strong> <span id="passedMissionsInARow">0</span></h2>
+                <h2><strong>Resistance score:</strong> <span id="resistanceScore">0</span></h2>
+                <h2><strong>Spies score:</strong> <span id="spiesScore">0</span></h2>
             </div>
-
+            <br>
             <div class="row text-center" id="currentPlayers">
-                <button class="btn btn-lg btn-primary" id="selectMissionMembersButton" disabled>Select mission members</button>
+                <button class="btn btn-lg btn-primary hide" id="selectMissionMembersButton">Select mission members</button>
                 <br>
-                <button class="btn btn-lg btn-error" disabled>Quit game</button>
+                <button class="btn btn-lg btn-danger upperCushion">Quit game</button>
             </div>
-
-            <div hidden>
-                <p id="username"><%=user.username%></p>
-                <p id="gameID"><%=user.currentGameID%></p>
-            </div>
-
-            <div class="row text-center">
-                <button onclick="location.href = '/profile';" id="myButton" class="btn btn-warning btn-lg" >Back</button>
-                <button style="display: none;" onclick="startGameButtonHandler();" id="startGameButton" class="btn btn-primary btn-lg" >Start game</button>
-            </div>
-
-            
         </div>
+    </div>
+
+    <!-- Modal for selecting mission members -->
+    <div class="modal fade" id="missionSelectionModal" tabindex="-1" role="dialog" aria-labelledby="missionSelectionLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Select mission members</h4>
+                </div>
+                <div class="modal-body" id="missionSelectionInputContainer">
+
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="missionSelectionVote();">Vote!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- This div holds critical info for game.js -->
+    <div hidden>
+        <p id="username"><%=user.username%></p>
+        <p id="gameID"><%=user.currentGameID%></p>
+        <% players.forEach(function(player) { %>
+            <p class="player"><%= player %></p>
+        <% }); %>
     </div>
 
 
     <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript" src="js/createGame.js"></script>
+    <script type="text/javascript" src="js/game.js"></script>
 </body>
 </html>

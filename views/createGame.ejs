@@ -34,21 +34,18 @@
                 <% }); %>
             </div>
 
+            <!-- This div holds critical info for createGame.js -->
             <div hidden>
                 <p id="username"><%=user.username%></p>
                 <p id="gameID"><%=user.currentGameID%></p>
             </div>
 
             <div class="row text-center">
-                <button onclick="location.href = '/profile';" id="myButton" class="btn btn-error btn-lg">Back</button>
+                <button onclick="location.href = '/profile';" id="myButton" class="btn btn-danger btn-lg">Back</button>
                 <button style="display: none;" onclick="startGameButtonHandler();" id="startGameButton" class="btn btn-primary btn-lg" >Start game</button>
             </div>
-
-    		
         </div>
     </div>
-
-
     <script src="https://code.jquery.com/jquery-2.2.3.min.js" integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo=" crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript" src="js/createGame.js"></script>

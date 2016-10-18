@@ -2,9 +2,19 @@ var gameplay = require('../app/gameplay.js');
 
 module.exports = function(app, passport) {
 	//default
+	/*
 	app.get('/', isLoggedIn, function(req, res) {
 		//if logged in, send to profile page, otherwise isLoggedIn will handle it
 		res.redirect('/home');
+	});*/
+
+	//development helper to test game.ejs
+	app.get('/', function(req, res) {
+		var fakeUser = {}
+		fakeUser.username = "fakeUser";
+		fakeUser.currentGameID = "fakeGame";
+		var fakePlayers = ["fakePlayer1", "fakePlayer2","fakePlayer3","fakePlayer4"];
+		res.render('game.ejs', {user: fakeUser, players: fakePlayers});
 	});
 
 	//homepage
