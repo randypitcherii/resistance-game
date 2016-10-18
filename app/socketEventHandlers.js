@@ -34,10 +34,16 @@ module.exports = function(io) {
 		//========================================================================
 		//gameplay events
 		//========================================================================
-		socket.on('initializeGame', function(gameInfo) {
-			console.log(gameInfo.username + " has initialized a new game with the following properties:");
+		//update the game with new game info
+		socket.on('updateGame', function(gameInfo) {
+			console.log(gameInfo.gameID + " has sent the following game info:");
 			console.log(gameInfo);
-			io.to(gameInfo.gameID).emit('initializeGame', gameInfo);
+			io.to(gameInfo.gameID).emit('updateGame', gameInfo);
+		});
+
+		//handle when the game ends win
+		socket.on("gameOver", function(info) {
+			io.to(info.gameID).emit('gameOver', info);
 		});
 	});
 };

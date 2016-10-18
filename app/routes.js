@@ -11,9 +11,10 @@ module.exports = function(app, passport) {
 	//development helper to test game.ejs
 	app.get('/', function(req, res) {
 		var fakeUser = {}
-		fakeUser.username = "fakeUser";
+		fakeUser.username = "fakeGame";
 		fakeUser.currentGameID = "fakeGame";
 		var fakePlayers = ["fakePlayer1", "fakePlayer2","fakePlayer3","fakePlayer4"];
+		fakePlayers.push(fakeUser.username);
 		res.render('game.ejs', {user: fakeUser, players: fakePlayers});
 	});
 
