@@ -30,7 +30,7 @@
                 <h2><strong>Game ID is:</strong> <%= user.currentGameID %></h2>
                 <h2><strong>Current leader:</strong> <span id="currentLeader">loading...</span></h2>
                 <h2><strong>Current round:</strong> <span id="currentRound">1</span></h2>
-                <h2><strong>Passed missions in a row:</strong> <span id="passedMissionsInARow">0</span></h2>
+                <h2><strong>Rejected missions in a row:</strong> <span id="rejectedMissionsIAR">0</span></h2>
                 <h2><strong>Resistance score:</strong> <span id="resistanceScore">0</span></h2>
                 <h2><strong>Spies score:</strong> <span id="spiesScore">0</span></h2>
             </div>
@@ -72,6 +72,35 @@
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-primary" onclick="missionSelectionVote();">Vote!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for reporting the results of a vote to start a mission -->
+    <div class="modal fade" id="startMissionVoteResultsModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Vote to start mission.</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12 text-center">
+                            <h2>Does the 'start mission' vote pass?</h2>
+                        </div>
+
+                        <div class="col-xs-6 text-center upperCushion">
+                            <button class="btn btn-lg btn-success" onclick="startMission();">Pass</button>
+                        </div>
+                        <div class="col-xs-6 text-center upperCushion">
+                            <button class="btn btn-lg btn-danger" onclick="skipMission();">Fail</button>
+                        </div>
+                    </div>
+                    <br>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="$('#startMissionVoteResultsModal').modal('hide');$('#missionSelectionModal').modal({backdrop: 'static'});">Back</button>
                 </div>
             </div>
         </div>
