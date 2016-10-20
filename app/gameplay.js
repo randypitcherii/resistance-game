@@ -10,17 +10,29 @@ gameplay.createGame = function(req, res, done) {
 		if (err) {
 			return done(req, res, err, null);
 		}
-		//instantiate new game
-		newGame = new Game();
 
-		//add game info
-		newGame.gameID = req.user.currentGameID;
-		newGame.players = [req.user.username];
-		newGame.isInProgress = false;
-		newGame.currentLeader = "";//current leader not yet defined
+		//try to find already existing game
+		Game.findOne({'gameID': req.user.currentGameID}, function(err, thisGame) {
+			if (thisGame) {
+				thisGame.players = [req.user.username];
+				
+				thisGame.save(function(err) {
+					done(req, res, err, thisGame.players);
+				});
 
-		newGame.save(function(err) {
-			done(req, res, err, newGame.players);
+			//if game doesn't exist, inform client
+			} else {
+				//instantiate new game
+				newGame = new Game();
+
+				//add game info
+				newGame.gameID = req.user.currentGameID;
+				newGame.players = [req.user.username];
+
+				newGame.save(function(err) {
+					done(req, res, err, newGame.players);
+				});
+			}
 		});
 	});
 }

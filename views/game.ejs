@@ -36,7 +36,8 @@
             </div>
             <br>
             <div class="row text-center" id="currentPlayers">
-                <button class="btn btn-lg btn-primary hide" id="selectMissionMembersButton">Select mission members</button>
+                <button class="btn btn-lg btn-success hide" id="selectMissionMembersButton">Select mission members</button>
+                <button class="btn btn-lg btn-primary" id="teamInfoButton">Team Info</button>
                 <br>
                 <a class="btn btn-lg btn-danger upperCushion" href='/profile'>Quit game</a>
             </div>
@@ -87,20 +88,46 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-xs-12 text-center">
-                            <h2>Does the 'start mission' vote pass?</h2>
+                            <h2>Is the mission rejected or accepted?</h2>
                         </div>
 
                         <div class="col-xs-6 text-center upperCushion">
-                            <button class="btn btn-lg btn-success" onclick="startMission();">Pass</button>
+                            <button class="btn btn-lg btn-success" onclick="startMission();">Accept</button>
                         </div>
                         <div class="col-xs-6 text-center upperCushion">
-                            <button class="btn btn-lg btn-danger" onclick="skipMission();">Fail</button>
+                            <button class="btn btn-lg btn-danger" onclick="skipMission();">Reject</button>
                         </div>
                     </div>
                     <br>
                 </div>
                 <div class="modal-footer">
                 <button type="button" class="btn btn-primary" onclick="$('#startMissionVoteResultsModal').modal('hide');$('#missionSelectionModal').modal({backdrop: 'static'});">Back</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for voting on mission pass or fail -->
+    <div class="modal fade" id="missionVoteModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Vote to pass or fail mission. (This is anonymous)</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-xs-12 text-center">
+                            <h2>Do you want the mission to pass or fail?</h2>
+                        </div>
+
+                        <div class="col-xs-6 text-center upperCushion">
+                            <button class="btn btn-lg btn-success" onclick="voteMissionPass();">Pass</button>
+                        </div>
+                        <div class="col-xs-6 text-center upperCushion">
+                            <button class="btn btn-lg btn-danger" onclick="voteMissionFail();">Fail</button>
+                        </div>
+                    </div>
+                    <br>
                 </div>
             </div>
         </div>

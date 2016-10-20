@@ -16,7 +16,6 @@ module.exports = function(io) {
 		//========================================================================
 		//emit new player name to all clients in this channel
 		socket.on('newPlayer_join', function(gameInfo) {
-			console.log(gameInfo.username + " is a new player in " + gameInfo.gameID);
 			io.to(gameInfo.gameID).emit('newPlayer_join', gameInfo.username);
 		});
 
@@ -36,9 +35,17 @@ module.exports = function(io) {
 		//========================================================================
 		//update the game with new game info
 		socket.on('updateGame', function(gameInfo) {
-			console.log(gameInfo.gameID + " has sent the following game info:");
-			console.log(gameInfo);
 			io.to(gameInfo.gameID).emit('updateGame', gameInfo);
+		});
+
+		//send vote
+		socket.on('vote', function(voteInfo) {
+			io.to(voteInfo.gameID).emit('vote', voteInfo);
+		});
+
+		//send mission status after a finished vote
+		socket.on('votingResults', function(missionStatus) {
+			io.to(missionStatus.gameID).emit('votingResults', missionStatus);
 		});
 
 		//handle when the game ends win

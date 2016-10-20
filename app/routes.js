@@ -1,13 +1,14 @@
 var gameplay = require('../app/gameplay.js');
+var Game = require('./models/game.js');
 
 module.exports = function(app, passport) {
 	//default
-	/*
 	app.get('/', isLoggedIn, function(req, res) {
 		//if logged in, send to profile page, otherwise isLoggedIn will handle it
 		res.redirect('/home');
-	});*/
+	});
 
+	/*
 	//development helper to test game.ejs
 	app.get('/', function(req, res) {
 		var fakeUser = {}
@@ -16,7 +17,7 @@ module.exports = function(app, passport) {
 		var fakePlayers = ["fakePlayer1", "fakePlayer2","fakePlayer3","fakePlayer4"];
 		fakePlayers.push(fakeUser.username);
 		res.render('game.ejs', {user: fakeUser, players: fakePlayers});
-	});
+	});*/
 
 	//homepage
 	app.get('/home', isLoggedIn, function(req, res) {
@@ -32,7 +33,7 @@ module.exports = function(app, passport) {
 
 	//createGame
 	app.get('/createGame', isLoggedIn, function(req, res) {
-		//load signup page with any flash data if it exists
+		//load createGame page
 		gameplay.createGame(req, res, function(req, res, err, players){
 			if (err) {
 				throw err;
@@ -67,8 +68,16 @@ module.exports = function(app, passport) {
 
 	//start game
 	app.get('/startGame', isLoggedIn, function(req, res) {
-		//for now just redirecting, but later we need to ensure the user is in a game
-		res.render('game.ejs', {user: req.user});
+		Game.findOne({'gameID': req.user.currentGameID}, function(err, thisGame) {
+			if (thisGame) {
+				res.render('game.ejs', {user: req.user, players: thisGame.players});
+				thisGame.remove();//no longer need to store this game
+			//if game doesn't exist, inform client
+			} else {
+				req.flash('joinMessage', 'Game was not found. Try again.');
+				res.redirect('/joinGame');
+			}
+		});
 	});
 
 	//login

@@ -1,15 +1,13 @@
 //Declare global page variable holder
 var gameInfo = {};
 var username = "";
+var userHasVoted = false;//keeps track of whether or not this user has voted
 var isGameOwner = false;
+var votingResults = [];//used to store votes
 var isCurrentLeader = false;
 var gameIsOver = false;
 //initialize the websocket
 var socket = io();
-
-function developmentStuff() {
-    $("#startMissionVoteResultsModal").modal({backdrop: "static"});
-}
 
 //when the page is ready, get values for global page variables
 $(document).ready(function() {
@@ -30,12 +28,27 @@ $(document).ready(function() {
     socket.emit('join', gameInfo);
     init();//initialize game
 
-    //setup modal listener
+    //setup button listeners
     $("#selectMissionMembersButton").click(function(){
         $("#missionSelectionModal").modal({backdrop: "static"});
     });
 
-    developmentStuff();//used to trigger development helpers. DELETE this before finishing
+    $("#teamInfoButton").click(function(){
+        if (gameInfo.spies.length > 0) {
+            var isSpy = false;
+            for (i = 0; i < gameInfo.spies.length; i++) {
+                if (username === gameInfo.spies[i]){
+                    isSpy = true;
+                }
+            } 
+
+            if(isSpy) {
+                alert("You are a spy.");
+            } else {
+                alert("You are a resistance member.")
+            }
+        }
+    });
 });
 
 //the game owner is responsible for initializing the game
@@ -49,7 +62,7 @@ function init() {
     gameInfo.resistancePoints = 0;
     gameInfo.spiesPoints = 0;
     gameInfo.missionMembers = [];
-    gameInfo.missionVotes = [];
+    gameInfo.currentlyVoting = false;
     gameInfo.currentLeaderIndex = 0;
     gameInfo.startNewRound = true;
     gameInfo.numRejectedMissionsIAR = 0;//IAR=in a row. 5 or more and spies win
@@ -68,7 +81,9 @@ function init() {
     shuffle(gameInfo.players);
 
     //send game info to all players
-    socket.emit("updateGame", gameInfo);
+    setTimeout(function() {
+        socket.emit("updateGame", gameInfo);
+    }, 1000);//pause for a second to allow other players time to load
 }
 
 //get and handle updated game info 
@@ -102,6 +117,21 @@ socket.on("updateGame", function(updatedInfo) {
         socket.emit("updateGame", gameInfo);
     }
 
+    //handle voting if currently voting
+    if(gameInfo.currentlyVoting) {
+        //open voting modal if current user is one of the mission members
+        if (username === gameInfo.missionMembers[0] || username === gameInfo.missionMembers[1]) {
+            if (!userHasVoted) {
+                //show voting modal and record that the user has voted
+                userHasVoted = true;
+                $(".modal").modal('hide');
+                $("#missionVoteModal").modal({backdrop: "static"});
+            }
+        }
+    } else {
+        userHasVoted = false;//resets the userHasVoted field in between votes
+    }
+
     //end game if someone has won
     if (gameInfo.spiesPoints >= 3 || gameInfo.numRejectedMissionsIAR >= 5) {
         socket.emit("gameOver", {winners: "spies"});
@@ -127,21 +157,23 @@ function missionSelectionVote() {
 
     //the members are valid. Continue to voting modal
     gameInfo.missionMembers.push(member0, member1);
-    $("#missionSelectionModal").modal('hide');
+    $(".modal").modal('hide');
     $("#startMissionVoteResultsModal").modal({backdrop: "static"});
 }
 
 //a mission has been proposed and voted in favor of. Start the mission
 function startMission() {
-    //hide the vote results modal and go to the mission pass/fail modal
-    $("#startMissionVoteResultsModal").modal('hide');
-
+    //hide the modal, update game info, and emit updateGame signal
+    $(".modal").modal('hide');
+    gameInfo.numRejectedMissionsIAR = 0;//reset this
+    gameInfo.currentlyVoting = true;//set game state to voting
+    socket.emit("updateGame", gameInfo);
 }
 
 //a mission has been proposed and voted against. Skip the mission
 function skipMission() {
     //hide the modal, update the game, and start next round
-    $("#startMissionVoteResultsModal").modal('hide');
+    $(".modal").modal('hide');
     gameInfo.numRejectedMissionsIAR += 1;//increment this
     gameInfo.currentLeaderIndex = (gameInfo.currentLeaderIndex + 1) % gameInfo.players.length
     gameInfo.missionMembers = [];
@@ -149,6 +181,85 @@ function skipMission() {
 
     socket.emit('updateGame', gameInfo);
 }
+
+//send a vote to pass the mission
+function voteMissionPass() {
+    //hide the modal, send vote
+    $(".modal").modal('hide');
+    var vote = {username: username, vote: "pass", gameID: gameInfo.gameID}
+    socket.emit("vote", vote);
+}
+
+//send a vote to fail the mission
+function voteMissionFail() {
+    //hide the modal, send vote
+    $(".modal").modal('hide');
+    var vote = {username: username, vote: "fail", gameID: gameInfo.gameID}
+    socket.emit("vote", vote);
+}
+
+//Handle incoming votes
+socket.on('vote', function(voteInfo) {
+    if (!isGameOwner) {
+        return;//only game owner handles this
+    }
+
+    if (votingResults.length === 0) {
+        votingResults.push(voteInfo);//add first vote
+        return;
+    }
+
+    if (votingResults[0].username === voteInfo.username) {
+        return;//nothing to do if a user somehow votes twice
+    }
+
+    votingResults.push(voteInfo);//add second vote
+    var votes = []
+    votes.push(votingResults[0].vote, votingResults[1].vote)
+
+    if (votes[0] === "fail" || votes[1] === "fail") {
+        socket.emit("votingResults", {votes: votes, missionPasses: false, gameID: gameInfo.gameID});
+    } else {
+        socket.emit("votingResults", {votes: votes, missionPasses: true, gameID: gameInfo.gameID});
+    }
+});
+
+//handle a finished vote
+socket.on("votingResults", function(missionStatus) {
+    if (isGameOwner) {
+        //update game info and start new round
+        gameInfo.currentRound += 1;
+        gameInfo.missionMembers = [];
+        gameInfo.currentlyVoting = false;
+        gameInfo.currentLeaderIndex = (gameInfo.currentLeaderIndex + 1) % gameInfo.players.length;
+        gameInfo.startNewRound = true;
+        gameInfo.numRejectedMissionsIAR = 0;
+
+        if (missionStatus.missionPasses) {
+            gameInfo.resistancePoints += 1;
+        } else {
+            gameInfo.spiesPoints += 1;
+        }
+
+        socket.emit("updateGame", gameInfo);
+    }
+
+    //clear votes
+    votingResults = [];
+
+    //inform client of vote results
+    var vote0 = missionStatus.votes[0]
+    var vote1 = missionStatus.votes[1]
+
+    if (vote0 !== vote1) {
+        alert("The mission has failed. There was one vote for pass and one vote for fail.");
+    } else if (vote0 === "pass") {
+        alert("The mission has passed. There were two votes for pass.");
+    } else {
+        alert("The mission has failed. There were two votes for fail.")
+    }
+
+});
 
 
 window.onbeforeunload = function(event) {
