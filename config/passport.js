@@ -28,7 +28,8 @@ module.exports = function(passport) {
 		process.nextTick(function() {
 			//check username and password length requirements
 			if (password.length === 0 || username.length === 0) {
-				return done(null, false, req.flash('signupMessage', 'Cannot accept empty username or password'));
+				//BUG-01 | BUG-02
+				//return done(null, false, req.flash('signupMessage', 'Cannot accept empty username or password'));
 			}
 			if (password.length > 50 || username.length > 50) {
 				var flashMessage = 'Neither username nor password may be longer than 50 characters.';
@@ -42,7 +43,8 @@ module.exports = function(passport) {
 				}
 				if (user) {
 					//user already exists
-					return done(null, false, req.flash('signupMessage', 'That username already exists'));
+					//BUG-03
+					//return done(null, false, req.flash('signupMessage', 'That username already exists'));
 				} else {
 					//username is available
 					var newUser = new User();

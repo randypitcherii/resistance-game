@@ -69,7 +69,8 @@ window.onbeforeunload = function(event) {
     }
 
     //to get here, the game is not loading. User must have closed or went to a new page
-    socket.emit('newPlayer_remove', gameInfo);
+    //BUG-18
+    //socket.emit('newPlayer_remove', gameInfo);
 };
 
 //Handle an incoming newPlayer signal

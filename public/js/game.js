@@ -30,7 +30,8 @@ $(document).ready(function() {
 
     //setup button listeners
     $("#selectMissionMembersButton").click(function(){
-        $("#missionSelectionModal").modal({backdrop: "static"});
+        //BUG-12
+        $("#missionSelectionModal").modal(/*{backdrop: "static"}*/);
     });
 
     $("#teamInfoButton").click(function(){
@@ -43,9 +44,13 @@ $(document).ready(function() {
             } 
 
             if(isSpy) {
-                alert("You are a spy.");
+                //BUG-24 part 1 of 2
+                alert("You're on one of the teams or whatever.");
+                //alert("You are a spy.");
             } else {
-                alert("You are a resistance member.")
+                //BUG-24 part 2 of 2
+                alert("You're on one of the teams or whatever.");
+                //alert("You are a resistance member.");
             }
         }
     });
@@ -70,7 +75,8 @@ function init() {
     //get spies
     var numPlayers = gameInfo.players.length;
     var numSpies = Math.ceil(numPlayers / 3.0);
-    shuffle(gameInfo.players);//randomize player order
+    //BUG-23 part 1 of 2
+    //shuffle(gameInfo.players);//randomize player order
     gameInfo.spies = [];//spies array
     while (numSpies > 0) {
         gameInfo.spies.push(gameInfo.players[numSpies]);
@@ -78,7 +84,8 @@ function init() {
     }
 
     //reshuffle players again to avoid leader order giving away the spies
-    shuffle(gameInfo.players);
+    //BUG-23 part 2 of 2
+    //shuffle(gameInfo.players);
 
     //send game info to all players
     setTimeout(function() {
@@ -125,7 +132,8 @@ socket.on("updateGame", function(updatedInfo) {
                 //show voting modal and record that the user has voted
                 userHasVoted = true;
                 $(".modal").modal('hide');
-                $("#missionVoteModal").modal({backdrop: "static"});
+                //BUG-07
+                $("#missionVoteModal").modal(/*{backdrop: "static"}*/);
             }
         }
     } else {
@@ -146,10 +154,11 @@ function missionSelectionVote() {
     var member1 = $("#missionMember1").val();
 
     //check the validity of the members
+    /*BUG-04 | BUG-05
     if (member0 === member1 || member0 === null || member1 ===null) {
         alert("Select 2 different players for this mission.");
         return;//nothing else to do.
-    }
+    }*/
 
     //reset selects
     $("#missionMember0").prop('selectedIndex',0);
@@ -158,7 +167,8 @@ function missionSelectionVote() {
     //the members are valid. Continue to voting modal
     gameInfo.missionMembers.push(member0, member1);
     $(".modal").modal('hide');
-    $("#startMissionVoteResultsModal").modal({backdrop: "static"});
+    //BUG-06
+    $("#startMissionVoteResultsModal").modal(/*{backdrop: "static"}*/);
 }
 
 //a mission has been proposed and voted in favor of. Start the mission
@@ -264,7 +274,8 @@ socket.on("votingResults", function(missionStatus) {
 
 window.onbeforeunload = function(event) {
     if (!gameIsOver) {//prevents onbeforeunload callback from firing another gameOver
-        socket.emit("gameOver", {gameID: gameInfo.gameID, winners: 'none', quitter: username});
+        //BUG-19
+        //socket.emit("gameOver", {gameID: gameInfo.gameID, winners: 'none', quitter: username});
     }
 };
 

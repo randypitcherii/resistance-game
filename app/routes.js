@@ -26,13 +26,15 @@ module.exports = function(app, passport) {
 	});
 
 	//profile
-	app.get('/profile', isLoggedIn, function(req, res) {
+	//BUG-13
+	app.get('/profile', /*isLoggedIn, */function(req, res) {
 		//load signup page with any flash data if it exists
 		res.render('profile.ejs', { user: req.user });
 	});
 
 	//createGame
-	app.get('/createGame', isLoggedIn, function(req, res) {
+	//BUG-16
+	app.get('/createGame', /*isLoggedIn, */function(req, res) {
 		//load createGame page
 		gameplay.createGame(req, res, function(req, res, err, players){
 			if (err) {
@@ -44,7 +46,8 @@ module.exports = function(app, passport) {
 	});
 
 	//join page
-	app.get('/joinGame', isLoggedIn, function(req, res) {
+	//BUG-15
+	app.get('/joinGame', /*isLoggedIn, */function(req, res) {
 		//load join page 
 		res.render('joinGame.ejs', {message: req.flash('joinMessage')});
 	});
@@ -67,11 +70,13 @@ module.exports = function(app, passport) {
 	});
 
 	//start game
-	app.get('/startGame', isLoggedIn, function(req, res) {
+	//BUG-14
+	app.get('/startGame', /*isLoggedIn, */function(req, res) {
 		Game.findOne({'gameID': req.user.currentGameID}, function(err, thisGame) {
 			if (thisGame) {
 				res.render('game.ejs', {user: req.user, players: thisGame.players});
-				thisGame.remove();//no longer need to store this game
+				//BUG-25
+				//thisGame.remove();//no longer need to store this game
 			//if game doesn't exist, inform client
 			} else {
 				req.flash('joinMessage', 'Game was not found. Try again.');

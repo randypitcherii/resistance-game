@@ -16,7 +16,8 @@
         <div class="page-header text-center">
             <h1>
                 <span class="fa fa-star"></span> 
-                Hello <%= user.username %> 
+                <!-- BUG-22 -->
+                Hello USERNAME<!--<%= user.username %> -->
                 <span class="fa fa-star"></span>
             </h1>
         </div>
@@ -24,7 +25,9 @@
         <div class="row text-center">
             <a href="/createGame" class="btn btn-lg btn-primary">Create Game</a>
             <a href="/joinGame" class="btn btn-lg btn-primary">Join Game</a>
-            <a href="/logout" class="btn btn-danger btn-lg">logout</a>
+            <!-- BUG-17 -->
+            <!-- <a href="/logout" class="btn btn-danger btn-lg">logout</a> -->
+            <a class="btn btn-danger btn-lg">logout</a>
         </div>
     </div>
 </div>

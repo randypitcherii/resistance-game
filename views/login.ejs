@@ -37,8 +37,11 @@
     </form>
 
     <hr>
-	<button onclick="location.href = '/';" id="myButton" class="btn btn-primary btn-lg" >Back</button>
-    <p>Need an account? <a href="/signup">Signup</a></p>
+    <!-- BUG-10 -->
+	<button onclick="//location.href = '/';" id="myButton" class="btn btn-primary btn-lg" >Back</button>
+    <!-- BUG-11 -->
+    <!-- <p>Need an account? <a href="/signup">Signup</a></p> -->
+    <p>Need an account? <a>Signup</a></p>
 </div>
 </div>
 </body>

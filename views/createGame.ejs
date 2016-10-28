@@ -41,7 +41,8 @@
             </div>
 
             <div class="row text-center">
-                <button onclick="location.href = '/profile';" id="myButton" class="btn btn-danger btn-lg">Back</button>
+                <!-- BUG-20 -->
+                <button onclick="//location.href = '/profile';" id="myButton" class="btn btn-danger btn-lg">Back</button>
                 <button style="display: none;" onclick="startGameButtonHandler();" id="startGameButton" class="btn btn-primary btn-lg" >Start game</button>
             </div>
         </div>
